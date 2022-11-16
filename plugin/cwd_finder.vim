@@ -23,9 +23,6 @@ endfunction
 
 function! s:save_cwd_finder_history_to_file() abort
 	let g:cwd_finder_history = get(g:, 'cwd_finder_history', [])
-	if len(g:cwd_finder_history) > g:cwd_finder_history_length
-		let g:cwd_finder_history = g:cwd_finder_history[0, g:cwd_finder_history_length-1]
-	endif
 	call writefile([json_encode(g:cwd_finder_history)], s:get_cwd_finder_file_name(), 's')
 endfunction
 
@@ -43,6 +40,9 @@ function! s:on_dir_changed() abort
 		let i += 1
 	endwhile
 	call insert(g:cwd_finder_history, {'path': p, 'atime': localtime(), 'count': acount+1}, 0)
+	if len(g:cwd_finder_history) > g:cwd_finder_history_length
+		let g:cwd_finder_history = g:cwd_finder_history[0: g:cwd_finder_history_length-1]
+	endif
 	call s:save_cwd_finder_history_to_file()
 endfunction
 
